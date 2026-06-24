@@ -1,0 +1,938 @@
+/* ----------------------------------------------------------------
+   Cairn — marketing site
+   Type system (three families, three roles, nothing else):
+     • Headings      → Instrument Serif        (the app's serif)
+     • Body / UI     → Inter                   (the app's body sans)
+     • Captions/meta → JetBrains Mono          (small mono labels)
+   ---------------------------------------------------------------- */
+
+:root {
+  --font-sans:  'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  --font-serif: 'Instrument Serif', 'Cormorant Garamond', Georgia, serif;
+  --font-mono:  'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+
+  --max: 1040px;
+  /* ease-out-quint — the "settled, unhurried" curve used by editorial
+     sites (OpenHome, Linear's docs, Apple's longer transitions).
+     More gravitas than the standard ease-out at the cost of slightly
+     longer perceived duration. */
+  --ease-out: cubic-bezier(0.19, 1, 0.22, 1);
+
+  /* DARK mode tokens (default).
+     Almost-pure black with the faintest violet undertone — Apple
+     uses pure #000 on iPhone pages; we keep a hint of plum so the
+     site reads as Cairn-the-app and not generic dark mode. */
+  --bg:           #050507;
+  --bg-tint-a:    rgba(120,  90, 200, 0.06);
+  --bg-tint-b:    rgba( 60,  40, 120, 0.04);
+
+  --text:         rgba(255, 255, 255, 0.96);
+  --text-mute:    rgba(255, 255, 255, 0.58);
+  --text-faint:   rgba(255, 255, 255, 0.34);
+  --text-whisper: rgba(255, 255, 255, 0.20);
+  --hairline:     rgba(255, 255, 255, 0.08);
+  --hairline-mid: rgba(255, 255, 255, 0.14);
+
+  --accent:       #b8a4ff;
+  --accent-on:    #ffffff;
+
+  --glass:        rgba(22, 18, 32, 0.65);
+  --glass-strong: rgba(22, 18, 32, 0.82);
+  --launcher-bg:  rgba(22, 18, 32, 0.68);
+  --launcher-highlight: rgba(255, 255, 255, 0.10);
+
+  --kbd-bg:       rgba(255, 255, 255, 0.06);
+  --code-bg:      rgba(255, 255, 255, 0.05);
+  --shadow-card:  0 50px 100px rgba(0, 0, 0, 0.55),
+                  0 20px 40px rgba(0, 0, 0, 0.32),
+                  0 0 0 0.5px rgba(255, 255, 255, 0.06) inset;
+
+  color-scheme: dark;
+}
+
+/* LIGHT mode — Apple-clean paper. Pure-white-ish bg, deep violet
+   accent, dark cool text. */
+@media (prefers-color-scheme: light) {
+  :root {
+    --bg:           #fafafc;
+    --bg-tint-a:    rgba(126,  92, 250, 0.05);
+    --bg-tint-b:    rgba( 91,  62, 216, 0.03);
+
+    --text:         rgba(10,  10,  16, 0.94);
+    --text-mute:    rgba(10,  10,  16, 0.58);
+    --text-faint:   rgba(10,  10,  16, 0.38);
+    --text-whisper: rgba(10,  10,  16, 0.22);
+    --hairline:     rgba(10,  10,  16, 0.10);
+    --hairline-mid: rgba(10,  10,  16, 0.18);
+
+    --accent:       #6f4dec;
+    --accent-on:    #ffffff;
+
+    --glass:        rgba(255, 255, 255, 0.65);
+    --glass-strong: rgba(255, 255, 255, 0.82);
+    --launcher-bg:  rgba(255, 254, 255, 0.86);
+    --launcher-highlight: rgba(255, 255, 255, 0.80);
+
+    --kbd-bg:       rgba(10,  10,  16, 0.06);
+    --code-bg:      rgba(10,  10,  16, 0.05);
+    --shadow-card:  0 50px 100px rgba(40,  20,  90, 0.16),
+                    0 20px 40px rgba(40,  20,  90, 0.10),
+                    0 0 0 0.5px rgba(10,  10,  16, 0.08) inset;
+
+    color-scheme: light;
+  }
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  line-height: 1.55;
+  overflow-x: hidden;
+  /* Inter stylistic tweaks — applied site-wide so they affect
+     every Inter run (body, nav, CTA, feature paragraphs, etc.).
+     Other typefaces (Instrument Serif, JetBrains Mono) ignore
+     these settings since they belong to different fonts.
+       • cv05 — tail on lowercase l (disambiguates l vs 1 / I)
+       • cv08 — serifs on capital I (same goal)
+       • tnum — tabular figures (uniform digit widths) */
+  font-feature-settings: "cv05" 1, "cv08" 1, "tnum" 1;
+  -webkit-font-feature-settings: "cv05" 1, "cv08" 1, "tnum" 1;
+}
+::selection { background: rgba(184, 164, 255, 0.25); color: #fff; }
+@media (prefers-color-scheme: light) {
+  ::selection { background: rgba(111, 77, 236, 0.18); color: #1a1024; }
+}
+
+/* No body backdrop. Apple uses solid bg; the violet only shows up
+   inside the product (launcher) and on accent elements (CTA, mark,
+   highlighted matches). Restraint is the design move. */
+
+.wrap {
+  position: relative;
+  z-index: 1;
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 0 32px;
+}
+
+/* Reveal-on-scroll: gentle fade with ease-out-quint. ------------ */
+.reveal {
+  opacity: 0;
+  transition: opacity 1200ms var(--ease-out);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+.reveal.is-in { opacity: 1; }
+@media (prefers-reduced-motion: reduce) {
+  .reveal { opacity: 1; transition: none; }
+}
+
+/* (Floating nav removed — page now starts directly with the hero.) */
+
+/* ── Hero ───────────────────────────────────────────────── */
+/* Apple proportions: huge headline, generous breathing room,
+   nothing decorative behind it. The CTA is the focal point. */
+.hero {
+  padding: clamp(80px, 12vw, 140px) 0 clamp(60px, 9vw, 100px);
+  text-align: center;
+}
+.eyebrow {
+  font: 400 11px/1 var(--font-mono);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  margin-bottom: 28px;
+}
+/* Hero brand lockup — sits above the headline where the eyebrow
+   used to live. Larger and warmer than the footer mark so it reads
+   as the site's identity, not a small disclosure label. */
+.hero-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 32px;
+  color: var(--text);
+}
+.hero-brand-mark {
+  display: inline-block;
+  width: 22px;
+  height: 26px;
+  color: var(--accent);
+}
+.hero-brand-mark svg { width: 100%; height: 100%; display: block; }
+.hero-brand-name {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 30px;
+  line-height: 1;
+  letter-spacing: -0.005em;
+  color: var(--text);
+}
+h1 {
+  font-family: var(--font-serif);
+  font-size: clamp(40px, 5.4vw, 68px);
+  line-height: 1.05;
+  letter-spacing: -0.015em;
+  margin: 0 auto 24px;
+  font-weight: 400;
+  max-width: 720px;
+  color: var(--text);
+}
+h1 em {
+  font-style: italic;
+  /* No opacity tricks, no colour shift — just the italic. */
+}
+.lede {
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--text-mute);
+  max-width: 520px;
+  margin: 0 auto 36px;
+  font-weight: 400;
+}
+.lede i {
+  font-style: italic;
+  /* Keep the same colour as the surrounding lede; italic is enough. */
+}
+
+/* CTA — filled violet gradient, matching the in-app primary
+   button (the Launch button in the search panel). Same recipe in
+   both modes since the brand colour is constant. */
+/* Violet-gradient CTA — same recipe as the in-app primary button
+   (Launch). Same fill in both light + dark mode since the brand
+   colour is constant; only the surrounding shadow softens in
+   light mode. */
+.cta-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  text-decoration: none;
+  color: #ffffff;
+  font: 500 14px/1 var(--font-sans);
+  padding: 13px 22px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #7E5CFA 0%, #5B3ED8 100%);
+  border: 0.5px solid rgba(255, 255, 255, 0.22);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.22),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.20),
+    0 12px 28px rgba(126, 92, 250, 0.32);
+  transition: filter 180ms var(--ease-out),
+              transform 180ms var(--ease-out),
+              box-shadow 180ms var(--ease-out);
+}
+.cta-link:hover {
+  color: #ffffff;
+  filter: brightness(1.06);
+  transform: translateY(-1px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.24),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.20),
+    0 14px 32px rgba(126, 92, 250, 0.42);
+}
+.cta-link:active { transform: translateY(0); }
+.cta-link .meta {
+  font: 400 11.5px/1 var(--font-mono);
+  letter-spacing: 0.04em;
+  color: rgba(255, 255, 255, 0.74);
+  padding-left: 14px;
+  border-left: 0.5px solid rgba(255, 255, 255, 0.28);
+}
+.cta-foot {
+  margin-top: 14px;
+  font: 400 11.5px/1 var(--font-mono);
+  color: var(--text-faint);
+  letter-spacing: 0.06em;
+}
+
+/* ── Features section ────────────────────────────────────────────
+   Three static cards stacked vertically. Each pairs a mockup of a
+   Cairn surface with a short description. Cards alternate sides
+   (visual left / right / left) for editorial rhythm. No scroll
+   mechanics — every card is fully visible the moment it's in view. */
+
+.features-section {
+  position: relative;
+  padding: clamp(48px, 7vw, 96px) 0 clamp(60px, 8vw, 120px);
+}
+.features-grid {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(72px, 11vw, 160px);
+  margin-top: clamp(20px, 4vw, 56px);
+}
+.feature-card {
+  display: grid;
+  /* Equal columns so the visual stage is the same width on every
+     card. The previous 1.05/0.95fr split made alternating cards
+     appear different widths because the launcher inside is
+     bounded by the column it sits in. */
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: clamp(40px, 6vw, 88px);
+  align-items: center;
+}
+.feature-card--reversed .feature-visual { order: 2; }
+.feature-card--reversed .feature-text   { order: 1; }
+
+/* Soft neutral stage behind each launcher mockup. One shade off
+   the page background — darker in light mode, lighter in dark
+   mode — so the launcher reads as a "product on a surface" not
+   as floating type. */
+.feature-visual {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: clamp(40px, 5vw, 76px) clamp(28px, 4vw, 56px);
+  border-radius: 22px;
+  background: #15151a;  /* dark-mode default */
+}
+@media (prefers-color-scheme: light) {
+  .feature-visual {
+    background: #ededf1;
+  }
+}
+.feature-visual .launcher {
+  width: 100%;
+  max-width: 460px;
+  /* Subtle violet inset stroke around the card — quiet outline
+     that defines the silhouette against the grey stage. */
+  box-shadow:
+    0 1px 0 var(--launcher-highlight) inset,
+    0 0 0 1px rgba(126, 92, 250, 0.28) inset,
+    var(--shadow-card);
+}
+@media (prefers-color-scheme: light) {
+  .feature-visual .launcher {
+    box-shadow:
+      0 1px 0 var(--launcher-highlight) inset,
+      0 0 0 1px rgba(126, 92, 250, 0.22) inset,
+      var(--shadow-card);
+  }
+}
+
+.feature-text { max-width: 460px; }
+.feature-card--reversed .feature-text { margin-left: auto; }
+
+.feature-num {
+  display: inline-block;
+  font: 400 11px/1 var(--font-mono);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  margin-bottom: 20px;
+}
+.feature-text h2 {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-size: clamp(30px, 3.4vw, 42px);
+  line-height: 1.12;
+  letter-spacing: -0.012em;
+  margin: 0 0 18px;
+  color: var(--text);
+  max-width: 18ch;
+}
+.feature-text h2 em { font-style: italic; }
+.feature-text p {
+  font: 400 14px/1.65 var(--font-sans);
+  color: var(--text-mute);
+  margin: 0;
+}
+
+/* Typing animation inside the feature-card launchers ──────────
+   The text starts visible (so the page is functional without JS
+   and degrades gracefully). When the JS loads under a moving-
+   motion preference, it clears `.li-text`, hides `.lrow`s, and
+   then animates each card the first time it crosses into the
+   viewport. The `is-typing` class controls the blinking caret. */
+
+.li-caret {
+  display: inline-block;
+  width: 1.5px;
+  height: 20px;
+  background: var(--accent);
+  vertical-align: -4px;
+  margin-left: 2px;
+  opacity: 0;
+}
+.feature-card.is-typing .li-caret {
+  opacity: 1;
+  animation: li-blink 1.05s steps(1, end) infinite;
+}
+@keyframes li-blink { 50% { opacity: 0; } }
+
+/* Once JS has decided to animate, it stamps `.is-animating` on the
+   card. That hides the rows and count until the typing finishes,
+   at which point they fade in with a clearly visible stagger.
+   Each row's transition-delay creates a 120ms cascade so the eye
+   reads the rows arriving one-by-one rather than as a single fade. */
+.feature-card.is-animating .lrow,
+.feature-card.is-animating .launcher-count {
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 700ms var(--ease-out),
+              transform 700ms var(--ease-out);
+}
+.feature-card.is-revealed .lrow,
+.feature-card.is-revealed .launcher-count {
+  opacity: 1;
+  transform: translateY(0);
+}
+.feature-card.is-animating .launcher-count { transition-delay: 60ms; }
+.feature-card.is-animating .lrow:nth-child(1) { transition-delay: 120ms; }
+.feature-card.is-animating .lrow:nth-child(2) { transition-delay: 240ms; }
+.feature-card.is-animating .lrow:nth-child(3) { transition-delay: 360ms; }
+.feature-card.is-animating .lrow:nth-child(4) { transition-delay: 480ms; }
+
+/* Tidiness-variant launcher contents: same shell, row sublines
+   show from→to paths, the "+N more" footer uses muted styling
+   to read as a summary, not a result. */
+.launcher--tidy .lsub-arrow {
+  display: inline-block;
+  margin: 0 4px;
+  color: var(--accent);
+  font-weight: 500;
+}
+.launcher--tidy .lrow--more { opacity: 0.7; }
+.launcher--tidy .lsub-more {
+  font: 400 12px/1.5 var(--font-mono);
+  color: var(--text-mute);
+}
+
+/* Chapter eyebrow — small mono-cap section label, sits above each
+   section's headline. Editorial structure: each section announces
+   itself before the headline. Inherits text-faint from whatever
+   section it's inside, so it automatically picks up the inverted
+   privacy section's colours. */
+.chapter-eyebrow {
+  display: block;
+  text-align: center;
+  font: 500 11px/1 var(--font-mono);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  margin: 0 auto 36px;
+}
+
+/* ── Positioning section (Spotlight · Cairn · Raycast) ────────
+   Always-dark stage. Three cards side-by-side. The middle Cairn
+   card is visually elevated via a violet inset stroke + faint
+   violet wash so the eye picks it as the "chosen" option. */
+
+.position-section {
+  /* Always dark, regardless of page color scheme. */
+  --bg:           #0a0810;
+  --text:         rgba(255, 255, 255, 0.96);
+  --text-mute:    rgba(255, 255, 255, 0.62);
+  --text-faint:   rgba(255, 255, 255, 0.36);
+  --hairline:     rgba(255, 255, 255, 0.08);
+  --hairline-mid: rgba(255, 255, 255, 0.14);
+  --accent:       #b8a4ff;
+
+  background: var(--bg);
+  color: var(--text);
+  padding: clamp(80px, 11vw, 140px) 0 clamp(60px, 8vw, 110px);
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+/* Soft violet wash behind the cards so the section reads as a
+   single moment, not a flat block. */
+.position-section::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 55% 45% at 50% 100%,
+      rgba(126, 92, 250, 0.18) 0%,
+      transparent 70%);
+}
+
+.position-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-rows: auto auto auto 1fr auto;
+  gap: 18px;
+  margin-top: clamp(36px, 5vw, 56px);
+  align-items: stretch;
+}
+.position-card {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: subgrid;
+  grid-row: span 5;
+  padding: 30px 26px 26px;
+  background: rgba(255, 255, 255, 0.025);
+  border: 0.5px solid var(--hairline);
+  border-radius: 18px;
+  position: relative;
+}
+/* Elevated middle card */
+.position-card--cairn {
+  background: rgba(126, 92, 250, 0.08);
+  border-color: transparent;
+  box-shadow:
+    0 0 0 1px rgba(126, 92, 250, 0.42) inset,
+    0 18px 48px rgba(126, 92, 250, 0.18);
+}
+
+.position-tag {
+  font: 500 10.5px/1 var(--font-mono);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  margin-bottom: 16px;
+}
+.position-card--cairn .position-tag { color: var(--accent); }
+
+.position-card h3 {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 28px;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  margin: 0 0 14px;
+  color: var(--text);
+}
+
+.position-blurb {
+  font: 400 14px/1.55 var(--font-sans);
+  color: var(--text-mute);
+  margin: 0 0 22px;
+}
+
+.position-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 22px;
+}
+.position-list li {
+  font: 400 13px/1.4 var(--font-sans);
+  color: var(--text-mute);
+  padding: 11px 0;
+  border-top: 0.5px solid var(--hairline);
+}
+.position-list li:first-child { border-top: none; }
+.position-card--cairn .position-list li { color: var(--text); }
+
+.position-foot {
+  font: 500 10.5px/1 var(--font-mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  padding-top: 4px;
+}
+.position-card--cairn .position-foot { color: var(--accent); }
+
+@media (max-width: 880px) {
+  .position-grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+}
+
+@media (max-width: 760px) {
+  /* Feature cards: collapse to one column, visual always above text. */
+  .feature-card,
+  .feature-card--reversed {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+  .feature-card--reversed .feature-visual { order: 1; }
+  .feature-card--reversed .feature-text   { order: 2; margin-left: 0; }
+  .feature-text { max-width: 100%; }
+  .feature-visual .launcher { max-width: 100%; }
+}
+
+/* ── Launcher preview — restrained, narrow, hairlines only ── */
+.preview-wrap {
+  margin: 80px auto 0;
+  max-width: 640px;
+}
+.launcher {
+  position: relative;
+  background: var(--launcher-bg);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
+          backdrop-filter: blur(40px) saturate(180%);
+  border-radius: 20px;
+  box-shadow:
+    0 1px 0 var(--launcher-highlight) inset,
+    0 0 0 0.5px var(--hairline-mid) inset,
+    var(--shadow-card);
+  overflow: hidden;
+  text-align: left;
+}
+/* Top-light highlight inside the bezel — the classic Apple glass
+   product photo recipe. */
+.launcher::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  background: radial-gradient(120% 60% at 30% -10%, var(--launcher-highlight), transparent 55%);
+}
+/* No halo — the launcher sits cleanly on the page, like an
+   object in a still-life photograph. Its existing soft shadow
+   gives it weight; no need for atmospheric glow. */
+.launcher-search {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px 28px;
+  gap: 14px;
+  border-bottom: 0.5px solid var(--hairline);
+}
+.launcher-input {
+  font-family: var(--font-serif);
+  font-size: 26px;
+  line-height: 1;
+  letter-spacing: -0.01em;
+  color: var(--text);
+  min-height: 26px;
+}
+.launcher-input .caret {
+  display: inline-block;
+  width: 1.5px;
+  height: 22px;
+  background: var(--accent);
+  margin-left: 4px;
+  vertical-align: -4px;
+  animation: blink 1.05s steps(1, end) infinite;
+}
+@keyframes blink { 50% { opacity: 0; } }
+.launcher-count {
+  font: 500 10.5px/1 var(--font-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+
+.launcher-body {
+  padding: 10px 0 16px;
+}
+
+.lrow {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 28px;
+}
+.lrow + .lrow { border-top: 0.5px solid var(--hairline); }
+.lmeta { min-width: 0; }
+.ltitle {
+  font: 500 14.5px/1.35 var(--font-sans);
+  color: var(--text);
+  letter-spacing: -0.005em;
+  margin-bottom: 5px;
+}
+.ltitle mark {
+  background: transparent;
+  color: var(--accent);
+  font-weight: 600;
+}
+.lsub {
+  font: 400 12px/1.5 var(--font-mono);
+  color: var(--text-faint);
+}
+.lsub mark {
+  background: transparent;
+  color: var(--accent);
+  font-weight: 500;
+}
+.laside {
+  font: 500 11px/1 var(--font-mono);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  white-space: nowrap;
+}
+
+/* ── Generic section heads ──────────────────────────────── */
+.section { padding: 96px 0; }
+.section-eyebrow {
+  font: 400 11px/1 var(--font-mono);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  margin-bottom: 24px;
+  text-align: center;
+}
+.section-title {
+  font-family: var(--font-serif);
+  font-size: clamp(32px, 4vw, 52px);
+  line-height: 1.08;
+  letter-spacing: -0.015em;
+  margin: 0 auto 48px;
+  font-weight: 400;
+  text-align: center;
+  max-width: 640px;
+  color: var(--text);
+}
+.section-title em { font-style: italic; }
+
+/* ── Features — paired statements, hairline divided ────── */
+.features { max-width: 720px; margin: 0 auto; }
+.feature {
+  display: grid;
+  grid-template-columns: minmax(0, 240px) 1fr;
+  gap: 48px;
+  padding: 32px 0;
+  border-top: 0.5px solid var(--hairline);
+}
+.feature:last-child { border-bottom: 0.5px solid var(--hairline); }
+.feature h3 {
+  font-family: var(--font-serif);
+  font-size: 22px;
+  font-weight: 400;
+  font-style: italic;
+  letter-spacing: -0.005em;
+  margin: 0;
+  color: var(--text);
+}
+.feature p {
+  font: 400 15px/1.6 var(--font-sans);
+  color: var(--text-mute);
+  margin: 0;
+  max-width: 460px;
+}
+/* Privacy feature gets a small accent tag above its h3 — the
+   only feature with a label, which is the point. The row also
+   picks up a 1px violet hairline on the left edge so the eye
+   catches it without the row needing to grow or get a card. */
+.feature--privacy {
+  position: relative;
+  padding-left: 20px;
+  margin-left: -20px;
+}
+.feature--privacy::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 32px;
+  bottom: 32px;
+  width: 1px;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    var(--accent) 30%,
+    var(--accent) 70%,
+    transparent 100%
+  );
+  opacity: 0.6;
+}
+.feature-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font: 500 10px/1 var(--font-mono);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 14px;
+}
+.feature-tag svg {
+  width: 11px;
+  height: 11px;
+  color: var(--accent);
+}
+.feature--privacy p i {
+  font-style: italic;
+  color: var(--text);
+}
+
+.feature code, .lede code, .step p code {
+  font: 400 13px/1 var(--font-mono);
+  color: var(--text);
+  padding: 2px 6px;
+  background: var(--code-bg);
+  border-radius: 4px;
+}
+.kbd {
+  display: inline-grid;
+  place-items: center;
+  min-width: 18px; height: 18px;
+  padding: 0 5px;
+  border-radius: 4px;
+  background: var(--kbd-bg);
+  font: 500 11px/1 var(--font-mono);
+  color: var(--text);
+  vertical-align: 1px;
+  margin: 0 1px;
+}
+
+/* ── How it works — three quiet steps ───────────────────── */
+.steps {
+  max-width: 720px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0;
+}
+.step {
+  display: grid;
+  grid-template-columns: 48px 1fr;
+  gap: 32px;
+  padding: 32px 0;
+  border-top: 0.5px solid var(--hairline);
+}
+.step:last-child { border-bottom: 0.5px solid var(--hairline); }
+.step-num {
+  font: 400 13px/1 var(--font-mono);
+  color: var(--text-faint);
+  padding-top: 4px;
+}
+.step h3 {
+  font-family: var(--font-serif);
+  font-size: 22px;
+  font-style: italic;
+  font-weight: 400;
+  margin: 0 0 8px;
+}
+.step p {
+  font: 400 15px/1.6 var(--font-sans);
+  color: var(--text-mute);
+  margin: 0;
+  max-width: 480px;
+}
+
+/* ── Final CTA — quiet "Get Cairn" moment ────────────────── */
+.end {
+  padding: clamp(100px, 14vw, 160px) 0 clamp(80px, 11vw, 130px);
+  text-align: center;
+}
+.end h2 {
+  font-family: var(--font-serif);
+  font-size: clamp(40px, 5.4vw, 64px);
+  line-height: 1.05;
+  letter-spacing: -0.018em;
+  margin: 0 0 22px;
+  font-weight: 400;
+  color: var(--text);
+}
+.end h2 em { font-style: italic; }
+.end p {
+  font-size: 15px;
+  color: var(--text-mute);
+  max-width: 440px;
+  margin: 0 auto 36px;
+}
+
+/* ── Footer ── Apple-style: dense, restrained, hierarchical ───── */
+.footer {
+  position: relative;
+  z-index: 1;
+  padding: 64px 0 56px;
+  border-top: 0.5px solid var(--hairline);
+}
+.footer-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 36px;
+}
+.footer-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+.footer-brand {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 10px;
+  text-decoration: none;
+  color: var(--text);
+}
+.footer-brand .mark {
+  width: 16px; height: 19px;
+  color: var(--accent);
+  align-self: center;
+}
+.footer-brand .mark svg { width: 100%; height: 100%; display: block; }
+.footer-brand-name {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 20px;
+  letter-spacing: -0.005em;
+  line-height: 1;
+}
+
+.footer-nav {
+  display: inline-flex;
+  gap: 32px;
+  font: 400 13px/1 var(--font-sans);
+}
+.footer-nav a {
+  color: var(--text-mute);
+  text-decoration: none;
+  transition: color 180ms var(--ease-out);
+}
+.footer-nav a:hover { color: var(--text); }
+
+.footer-bottom {
+  padding-top: 28px;
+  border-top: 0.5px solid var(--hairline);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.footer-fine {
+  margin: 0;
+  font: 400 12px/1.6 var(--font-sans);
+  color: var(--text-faint);
+  max-width: 720px;
+}
+.footer-fine a {
+  color: var(--text-mute);
+  text-decoration: none;
+  border-bottom: 0.5px solid var(--hairline);
+  transition: color 180ms, border-color 180ms;
+}
+.footer-fine a:hover {
+  color: var(--text);
+  border-bottom-color: var(--text-faint);
+}
+.footer-meta {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font: 400 11px/1 var(--font-mono);
+  letter-spacing: 0.04em;
+  color: var(--text-whisper);
+}
+.footer-dot { opacity: 0.6; }
+
+@media (max-width: 620px) {
+  .footer-top { flex-direction: column; align-items: flex-start; gap: 18px; }
+  .footer-nav { gap: 22px; }
+}
+
+/* ── Responsive ─────────────────────────────────────────── */
+@media (max-width: 760px) {
+  /* Mobile type already scales via clamp(); only the small things
+     need their own tweaks. */
+  .feature { grid-template-columns: 1fr; gap: 12px; }
+  .section { padding: 64px 0; }
+  .hero { padding: 100px 0 80px; }
+}
+@media (max-width: 520px) {
+  .wrap { padding: 0 22px; }
+  .foot-row { flex-direction: column; gap: 16px; }
+  .cta-link { width: 100%; justify-content: center; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .reveal, .launcher-count, .launcher-body { opacity: 1; transition: none; }
+  .launcher-input .caret { animation: none; }
+}

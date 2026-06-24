@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Cairn · Find anything on your Mac</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<meta name="googlebot" content="noindex, nofollow" />
+<meta name="description" content="A quiet, local-first retrieval tool for Mac. Search filenames and the words written inside your files." />
+
+<meta property="og:title" content="Cairn · Find anything on your Mac, even inside files." />
+<meta property="og:description" content="A quiet, local-first retrieval tool for Mac. Search filenames and the words written inside your files." />
+<meta property="og:image" content="/icon.png" />
+<meta property="og:type" content="website" />
+<meta name="theme-color" content="#0a0810" />
+<link rel="icon" href="/icon.png" type="image/png" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+<link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+
+<!-- One SVG <defs> at the top of the body holds the cairn-stone
+     gradient. Every brand mark on the page (`<use href="#cairn-stone">`)
+     pulls from it. -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="cairn-mark" viewBox="0 0 24 28">
+      <!-- Four stacked stones, solid currentColor, no shadow, no
+           gradient. Each ellipse is slightly narrower and flatter
+           than the one below it. -->
+      <ellipse cx="12" cy="23" rx="9.5" ry="2.6" fill="currentColor"/>
+      <ellipse cx="12" cy="17" rx="7.5" ry="2.2" fill="currentColor"/>
+      <ellipse cx="12" cy="11.5" rx="5.5" ry="1.9" fill="currentColor"/>
+      <ellipse cx="12" cy="6.5" rx="3.5" ry="1.6" fill="currentColor"/>
+    </symbol>
+  </defs>
+</svg>
+
+<main id="top">
+
+  <!-- Hero ----------------------------------------------------- -->
+  <section class="hero">
+    <div class="wrap">
+      <div class="hero-brand" aria-label="Cairn">
+        <span class="hero-brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 28"><use href="#cairn-mark"/></svg>
+        </span>
+        <span class="hero-brand-name">Cairn</span>
+      </div>
+      <h1>
+        Find anything on your Mac,
+        <em>even inside files.</em>
+      </h1>
+      <p class="lede">
+        Cairn searches the words written inside your files, not just
+        filenames. Type a phrase you remember writing, find the file it
+        lives in. Everything stays on your machine.
+      </p>
+
+      <a class="cta-link" href="/Cairn-0.1.0.dmg" download>
+        <span>Download for Mac</span>
+        <span class="meta">Free · 1.9 MB</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- Features section ---------------------------------------------
+       Three static cards, no scroll mechanics. Each card pairs a
+       mockup of the relevant Cairn surface with its description.
+       Cards alternate sides (visual left → right → left) for
+       editorial rhythm. -->
+  <section class="features-section" id="features">
+    <div class="wrap">
+      <div class="chapter-eyebrow">Features</div>
+    </div>
+
+    <div class="wrap features-grid">
+
+      <!-- 1 — Content search -->
+      <article class="feature-card" data-reveal>
+        <div class="feature-visual">
+          <div class="launcher">
+            <div class="launcher-search">
+              <div class="launcher-input"><span class="li-text">ferritin levels</span><span class="li-caret" aria-hidden="true"></span></div>
+              <div class="launcher-count">2 matches</div>
+            </div>
+            <div class="launcher-body">
+              <div class="lrow">
+                <div class="lmeta">
+                  <div class="ltitle">Meeting-notes-may.md</div>
+                  <div class="lsub">… doctor flagged <mark>ferritin levels</mark> at the last checkup, recommending&nbsp;…</div>
+                </div>
+                <div class="laside">3d ago</div>
+              </div>
+              <div class="lrow">
+                <div class="lmeta">
+                  <div class="ltitle">Yearly-checkup.pdf</div>
+                  <div class="lsub">… bloodwork showed <mark>ferritin levels</mark> trending up 14% year-over-year&nbsp;…</div>
+                </div>
+                <div class="laside">PDF</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="feature-text">
+          <span class="feature-num">01 / 03</span>
+          <h2><em>Find a phrase</em> you remember writing.</h2>
+          <p>Cairn reads the body of every file in your library. Notes,
+          PDFs, code, drafts. Type a fragment you remember, see exactly
+          which files contain it and the line they say it on.</p>
+        </div>
+      </article>
+
+      <!-- 2 — Fuzzy filename match (visual on the right) -->
+      <article class="feature-card feature-card--reversed" data-reveal>
+        <div class="feature-visual">
+          <div class="launcher">
+            <div class="launcher-search">
+              <div class="launcher-input"><span class="li-text">rport q4</span><span class="li-caret" aria-hidden="true"></span></div>
+              <div class="launcher-count">3 fuzzy</div>
+            </div>
+            <div class="launcher-body">
+              <div class="lrow">
+                <div class="lmeta">
+                  <div class="ltitle"><mark>Report</mark>-<mark>Q4</mark>-2025.md</div>
+                  <div class="lsub">Note · ~/Digime/Writing</div>
+                </div>
+                <div class="laside">2h ago</div>
+              </div>
+              <div class="lrow">
+                <div class="lmeta">
+                  <div class="ltitle"><mark>Q4</mark>-Performance-<mark>Report</mark>.pdf</div>
+                  <div class="lsub">PDF · ~/Work/Reviews</div>
+                </div>
+                <div class="laside">1w ago</div>
+              </div>
+              <div class="lrow">
+                <div class="lmeta">
+                  <div class="ltitle">Annual-<mark>Report</mark>-2024.pdf</div>
+                  <div class="lsub">PDF · ~/Work/Reviews</div>
+                </div>
+                <div class="laside">PDF</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="feature-text">
+          <span class="feature-num">02 / 03</span>
+          <h2><em>Half-remembered</em> filenames still match.</h2>
+          <p>Don’t worry about how you named it. Type roughly what
+          you meant. Cairn forgives typos, missing words, and
+          mis-ordered fragments. The closest matches surface first.</p>
+        </div>
+      </article>
+
+      <!-- 3 — Intelligent folder organization -->
+      <article class="feature-card" data-reveal>
+        <div class="feature-visual">
+          <!-- Same launcher shell, different content: this is the
+               Tidiness suggestion surface, not a typed search. -->
+          <div class="launcher launcher--tidy">
+            <div class="launcher-search">
+              <div class="launcher-input"><span class="li-text">12 files</span><span class="li-caret" aria-hidden="true"></span></div>
+              <div class="launcher-count">Tidiness</div>
+            </div>
+            <div class="launcher-body">
+              <div class="lrow">
+                <div class="lmeta">
+                  <div class="ltitle">budget-q3-2025.pdf</div>
+                  <div class="lsub">~/Downloads <span class="lsub-arrow">→</span> ~/Documents/Reports</div>
+                </div>
+                <div class="laside">PDF</div>
+              </div>
+              <div class="lrow">
+                <div class="lmeta">
+                  <div class="ltitle">budget-q4-2025.pdf</div>
+                  <div class="lsub">~/Downloads <span class="lsub-arrow">→</span> ~/Documents/Reports</div>
+                </div>
+                <div class="laside">PDF</div>
+              </div>
+              <div class="lrow">
+                <div class="lmeta">
+                  <div class="ltitle">meeting-notes-may.md</div>
+                  <div class="lsub">~/Downloads <span class="lsub-arrow">→</span> ~/Documents/Notes</div>
+                </div>
+                <div class="laside">MD</div>
+              </div>
+              <div class="lrow lrow--more">
+                <div class="lmeta">
+                  <div class="lsub-more">+ 9 more</div>
+                </div>
+                <div class="laside">Review</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="feature-text">
+          <span class="feature-num">03 / 03</span>
+          <h2><em>Folders organize</em> themselves, with your sign-off.</h2>
+          <p>Cairn watches how you actually file things and proposes
+          small, reviewable batches. Never a surprise move. You stay
+          in charge of every file, with one click to approve.</p>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- Positioning section — where Cairn sits between Spotlight
+       (default macOS launcher) and Raycast (extension-driven
+       power-user toolkit). Three columns; Cairn is the visually
+       elevated middle. -->
+  <section class="position-section">
+    <div class="wrap">
+      <div class="chapter-eyebrow">Where Cairn fits</div>
+      <h2 class="section-title">Between <em>too little</em> and <em>too much.</em></h2>
+
+      <div class="position-grid" data-reveal>
+        <!-- Left: Spotlight -->
+        <article class="position-card">
+          <span class="position-tag">The default</span>
+          <h3>Spotlight</h3>
+          <p class="position-blurb">Built into macOS. Apps, filenames, and the basics. Reads inside common file types through its background importers, but content search isn’t where it puts its weight.</p>
+          <ul class="position-list">
+            <li>Apps and filenames</li>
+            <li>Web and dictionary suggestions</li>
+            <li>Quick calculations</li>
+            <li>Built into macOS</li>
+            <li>Privacy: Apple, stays on device</li>
+            <li>Local mode: always</li>
+          </ul>
+          <span class="position-foot">For beginners</span>
+        </article>
+
+        <!-- Centre: Cairn -->
+        <article class="position-card position-card--cairn">
+          <span class="position-tag">The middle</span>
+          <h3>Cairn</h3>
+          <p class="position-blurb">Searches the words written <em>inside</em> your files. Fuzzy matched, ranked by relevance, with the line each match lives on. Fast, local, focused. Stops where complexity creeps in.</p>
+          <ul class="position-list">
+            <li>Searches inside file contents, ranked, with the matching line shown</li>
+            <li>Forgiving fuzzy matching</li>
+            <li>Math and currency answers</li>
+            <li>Folder organization suggestions</li>
+            <li>Privacy: never leaves your Mac</li>
+            <li>Local mode: no account, no cloud</li>
+          </ul>
+          <span class="position-foot">For everyone in between</span>
+        </article>
+
+        <!-- Right: Raycast -->
+        <article class="position-card">
+          <span class="position-tag">The toolkit</span>
+          <h3>Raycast</h3>
+          <p class="position-blurb">A launcher with hundreds of extensions, an AI assistant, scripting, and window management. Powerful, but a lot to learn.</p>
+          <ul class="position-list">
+            <li>Extensions marketplace</li>
+            <li>AI assistant (Pro)</li>
+            <li>Script commands and snippets</li>
+            <li>Window management</li>
+            <li>Privacy: cloud sync required</li>
+            <li>Local mode: limited, account required</li>
+          </ul>
+          <span class="position-foot">For power users</span>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- Final CTA ------------------------------------------------ -->
+  <section class="end" id="download">
+    <div class="wrap" data-reveal>
+      <div class="chapter-eyebrow">Available</div>
+      <h2>Ready to find <em>things?</em></h2>
+      <p>Available for macOS 13 Ventura and later. Apple Silicon today; Intel build on request.</p>
+      <a class="cta-link" href="/Cairn-0.1.0.dmg" download>
+        <span>Download for Mac</span>
+        <span class="meta">Free · 1.9 MB · v0.1.0</span>
+      </a>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="wrap footer-inner">
+    <!-- Top row: brand mark + tagline (left), nav links (right). -->
+    <div class="footer-top">
+      <a class="footer-brand" href="#top" aria-label="Cairn home">
+        <span class="mark" aria-hidden="true">
+          <svg viewBox="0 0 24 28"><use href="#cairn-mark"/></svg>
+        </span>
+        <span class="footer-brand-name">Cairn</span>
+      </a>
+      <nav class="footer-nav" aria-label="Footer">
+        <a href="#features">Features</a>
+        <a href="#download">Download</a>
+      </nav>
+    </div>
+
+    <!-- Bottom row: tiny disclosure-style copy. Apple's footers are
+         dense with this kind of small mono / sans grey type. -->
+    <div class="footer-bottom">
+      <p class="footer-fine">
+        Cairn is a local-first launcher for macOS 13 Ventura and later.
+        Built and notarized by <a href="https://himanshu.is" rel="noopener">Himanshu</a>.
+        Apple, the Apple logo and Mac are trademarks of Apple Inc.,
+        registered in the U.S. and other countries.
+      </p>
+      <p class="footer-meta">
+        <span>Copyright © 2026 Cairn</span>
+        <span class="footer-dot">·</span>
+        <span>v0.1.0</span>
+      </p>
+    </div>
+  </div>
+</footer>
+
+<script src="/script.js" defer></script>
+</body>
+</html>

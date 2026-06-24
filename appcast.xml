@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Cairn Sparkle appcast.
+
+  Served via GitHub Pages at
+  https://zyhim03.github.io/cairn-site/appcast.xml (matches Info.plist's
+  SUFeedURL). Publish the website/ folder to a public Pages repo named
+  "cairn-site" so this URL resolves.
+
+  For each new release, `./build.sh release` prints the signed
+  <enclosure> line (edSignature + length); add a new <item> with it.
+-->
+<rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle">
+  <channel>
+    <title>Cairn</title>
+    <link>https://zyhim03.github.io/cairn-site/appcast.xml</link>
+    <description>Most recent updates to Cairn.</description>
+    <language>en</language>
+    <item>
+      <title>Version 0.1.0</title>
+      <description><![CDATA[<p>Initial release.</p>]]></description>
+      <pubDate>Wed, 24 Jun 2026 00:00:00 +0000</pubDate>
+      <sparkle:version>0.1.0</sparkle:version>
+      <sparkle:shortVersionString>0.1.0</sparkle:shortVersionString>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
+      <enclosure
+        url="https://zyhim03.github.io/cairn-site/Cairn-0.1.0.dmg"
+        sparkle:edSignature="rRgX1Rd57eKqOrBGHuPMoqOXdg/EXZjqbXcwxsG9+FSZ+2hVIjBceVIFF7+VMFunJKUuFgSfUh5ckaWycSq8Aw=="
+        length="2018975"
+        type="application/octet-stream" />
+    </item>
+  </channel>
+</rss>
